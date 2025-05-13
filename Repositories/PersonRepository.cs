@@ -14,7 +14,7 @@ namespace aburbanoS5A.Repositories
         string dbPhat;
         private SQLiteConnection conn;
 
-        public string statusMessage {  get; set; }
+        public string statusMessage { get; set; }
 
         public PersonRepository(string path)
         {
@@ -49,13 +49,13 @@ namespace aburbanoS5A.Repositories
             }
         }
 
-            
-            public List<Persona> GetAllPerson()
+
+        public List<Persona> GetAllPerson()
         {
             try
             {
                 Init();
-                    return conn.Table<Persona>().ToList();
+                return conn.Table<Persona>().ToList();
             }
             catch (Exception ex)
             {
@@ -65,5 +65,47 @@ namespace aburbanoS5A.Repositories
             return new List<Persona>();
         }
         
+    public void UpdatePerson(int id, string name)
+        {
+            int result = 0;
+            try
+            {
+                Init();
+                if (id <= 0 || string.IsNullOrEmpty(name))
+                    throw new Exception("ID y nombre válidos son requeridos");
+
+                var person = conn.Table<Persona>().FirstOrDefault(p => p.Id == id);
+                if (person is null)
+                    throw new Exception("Persona no encontrada");
+
+                person.Name = name;
+                result = conn.Update(person);
+                statusMessage = string.Format("Dato actualizado");
+            }
+            catch (Exception ex)
+            {
+                statusMessage = string.Format("ERROR: " + ex.Message);
+            }
+        }
+
+        public void DeletePerson(int id)
+        {
+            int result = 0;
+            try
+            {
+                Init();
+                var person = conn.Table<Persona>().FirstOrDefault(p => p.Id == id);
+                if (person is null)
+                    throw new Exception("Persona no encontrada");
+
+                result = conn.Delete(person);
+                statusMessage = string.Format("Dato eliminado");
+            }
+            catch (Exception ex)
+            {
+                statusMessage = string.Format("ERROR: " + ex.Message);
+            }
+        }
     }
+
 }
